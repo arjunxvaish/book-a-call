@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apply — Book a Call</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --white:  #ffffff;
+      --off:    #f7f7f7;
+      --border: #e6e6e6;
+      --muted:  #f0f0f0;
+      --sub:    #999999;
+      --dim:    #555555;
+      --text:   #111111;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--white);
+      color: var(--text);
+      font-family: 'Roboto', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    .page-top {
+      position: relative;
+      overflow: hidden;
+      padding-bottom: 72px;
+    }
+    .gradient-sweep {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 90% -10%, rgba(196,181,253,0.45) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 110% 60%, rgba(251,207,232,0.35) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 70% at -10% 30%, rgba(186,230,253,0.3) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: relative; z-index: 10;
+      padding: 28px 56px;
+    }
+
+    /* ── HERO ── */
+    .hero-copy {
+      position: relative; z-index: 10;
+      max-width: 680px; margin: 0 auto;
+      padding: 72px 56px 0;
+      text-align: center;
+    }
+    .eyebrow {
+      font-size: 11px; font-weight: 400;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: #7c6af7; margin-bottom: 22px;
+    }
+    h1 {
+      font-size: clamp(40px, 6.5vw, 64px);
+      font-weight: 100;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: 0;
+    }
+    h1 strong { font-weight: 400; }
+
+    /* ── RULE ── */
+    .rule {
+      max-width: 680px; margin: 60px auto 0;
+      padding: 0 56px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── FORM SECTION ── */
+    .form-section {
+      max-width: 680px; margin: 0 auto;
+      padding: 52px 56px 80px;
+    }
+    .form-heading {
+      font-size: 14px; font-weight: 400;
+      color: var(--text); margin-bottom: 4px;
+    }
+    .form-sub {
+      font-size: 13px; font-weight: 300;
+      color: var(--sub); margin-bottom: 38px;
+    }
+
+    /* ── TRACK RECORD ── */
+    .track-record {
+      display: inline-flex; align-items: center; gap: 8px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 16px;
+      margin-bottom: 38px;
+      text-decoration: none;
+      transition: border-color 0.15s;
+    }
+    .track-record:hover { border-color: #c4bbfb; }
+    .track-dot { width: 6px; height: 6px; border-radius: 50%; background: #7c6af7; flex-shrink: 0; }
+    .track-text {
+      font-size: 12px; font-weight: 300;
+      color: var(--dim); letter-spacing: 0.01em;
+    }
+    .track-text span { color: var(--text); font-weight: 400; }
+
+    /* ── Q BLOCKS ── */
+    .q-block { margin-bottom: 28px; }
+    .q-label {
+      font-size: 10px; font-weight: 400;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--sub); margin-bottom: 10px;
+      display: block;
+    }
+
+    .q-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .q-input {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: 'Roboto', sans-serif;
+      font-weight: 300; font-size: 14px;
+      padding: 13px 15px;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      width: 100%;
+    }
+    .q-input::placeholder { color: #ccc; }
+    .q-input:focus {
+      border-color: #7c6af7;
+      box-shadow: 0 0 0 3px rgba(124,106,247,0.08);
+    }
+
+    /* ── MCQ ── */
+    .mcq-grid { display: flex; flex-direction: column; gap: 7px; }
+    .mcq-grid.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+
+    .mcq-option {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 12px 15px;
+      cursor: pointer;
+      transition: border-color 0.12s, box-shadow 0.12s;
+      user-select: none;
+    }
+    .mcq-option:hover { border-color: #c4bbfb; }
+    .mcq-option.selected {
+      border-color: #7c6af7;
+      box-shadow: 0 0 0 3px rgba(124,106,247,0.07);
+    }
+    .mcq-option.error-flash {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239,68,68,0.08);
+      animation: flash 0.4s ease;
+    }
+    @keyframes flash {
+      0%, 100% { border-color: #ef4444; }
+      50% { border-color: #fca5a5; }
+    }
+
+    .mcq-key {
+      width: 20px; height: 20px; border-radius: 4px;
+      background: var(--muted);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      font-size: 9px; font-weight: 400;
+      color: var(--sub);
+      transition: all 0.12s;
+    }
+    .mcq-option.selected .mcq-key {
+      background: #7c6af7;
+      border-color: #7c6af7;
+      color: white;
+    }
+    .mcq-option.error-flash .mcq-key {
+      background: #fee2e2;
+      border-color: #ef4444;
+      color: #ef4444;
+    }
+    .mcq-text {
+      font-size: 13px; font-weight: 300;
+      color: var(--dim); transition: color 0.12s;
+    }
+    .mcq-option.selected .mcq-text { color: var(--text); }
+
+    /* ── SUBMIT ── */
+    .submit-row { margin-top: 28px; }
+    .submit-btn {
+      background: #7c6af7;
+      color: white;
+      border: none; border-radius: 6px;
+      font-family: 'Roboto', sans-serif;
+      font-size: 13px; font-weight: 400;
+      letter-spacing: 0.03em;
+      padding: 14px 36px;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+      box-shadow: 0 2px 10px rgba(124,106,247,0.22);
+      display: block;
+      margin-bottom: 20px;
+    }
+    .submit-btn:hover {
+      background: #6355e8;
+      box-shadow: 0 4px 18px rgba(124,106,247,0.32);
+    }
+    .submit-btn:active { transform: scale(0.98); }
+
+    /* ── BONUS ── */
+    .bonus-note {
+      display: flex; align-items: flex-start; gap: 10px;
+      background: #fafafa;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 14px 16px;
+      margin-top: 16px;
+    }
+    .bonus-icon {
+      font-size: 13px; flex-shrink: 0; margin-top: 1px;
+    }
+    .bonus-text {
+      font-size: 12px; font-weight: 300;
+      color: var(--dim); line-height: 1.65;
+    }
+    .bonus-text strong { color: var(--text); font-weight: 400; }
+
+    /* ── ERROR ── */
+    .error-banner {
+      display: none; margin-top: 16px;
+      border: 1px solid #fecaca;
+      background: #fff8f8;
+      border-radius: 7px; padding: 16px 18px;
+    }
+    .error-banner.show { display: flex; align-items: flex-start; gap: 11px; }
+    .error-icon-x { color: #ef4444; font-size: 13px; flex-shrink: 0; margin-top: 1px; }
+    .error-title {
+      font-size: 13px; font-weight: 400;
+      color: #dc2626; margin-bottom: 3px;
+    }
+    .error-body {
+      font-size: 12px; font-weight: 300;
+      color: #991b1b; line-height: 1.6;
+    }
+
+    /* ── CALENDLY ── */
+    .cal-section {
+      display: none;
+      max-width: 680px; margin: 0 auto;
+      padding: 0 56px 80px;
+    }
+    .cal-section.show { display: block; }
+    .cal-header {
+      border: 1px solid var(--border); border-bottom: none;
+      border-radius: 7px 7px 0 0;
+      padding: 15px 20px;
+      background: var(--off);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .cal-left { display: flex; align-items: center; gap: 8px; }
+    .cal-dot { width: 6px; height: 6px; border-radius: 50%; background: #7c6af7; }
+    .cal-label {
+      font-size: 10px; font-weight: 400;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: #7c6af7;
+    }
+    .cal-note { font-size: 12px; font-weight: 300; color: var(--sub); }
+    .calendly-inline-widget {
+      border: 1px solid var(--border);
+      border-radius: 0 0 7px 7px; overflow: hidden;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 22px 56px;
+    }
+    footer span {
+      font-size: 11px; font-weight: 300; color: var(--sub);
+    }
+
+    @media (max-width: 600px) {
+      header { padding: 18px 20px; }
+      .hero-copy { padding: 52px 20px 0; }
+      .rule, .form-section, .cal-section { padding-left: 20px; padding-right: 20px; }
+      h1 { font-size: 34px; }
+      .q-row, .mcq-grid.two-col { grid-template-columns: 1fr; }
+      footer { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-top">
+  <div class="gradient-sweep"></div>
+  <header></header>
+  <div class="hero-copy">
+    <p class="eyebrow">30 Minute Call</p>
+    <h1><strong>Fix your trading.</strong><br/>Book a call.</h1>
+  </div>
+</div>
+
+<div class="rule"></div>
+
+<div class="form-section">
+  <p class="form-heading">Four questions.</p>
+  <p class="form-sub">Under 60 seconds.</p>
+
+  <a class="track-record" href="https://arjunxvaish.github.io" target="_blank">
+    <div class="track-dot"></div>
+    <span class="track-text"><span>2+ years</span> of public timestamped trades</span>
+  </a>
+
+  <div class="q-block">
+    <div class="q-row">
+      <div>
+        <span class="q-label">First Name</span>
+        <input class="q-input" type="text" id="fname" placeholder="First name" autocomplete="given-name" />
+      </div>
+      <div>
+        <span class="q-label">Email</span>
+        <input class="q-input" type="email" id="email" placeholder="you@example.com" autocomplete="email" />
+      </div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <span class="q-label">What do you trade?</span>
+    <div class="mcq-grid two-col" data-q="market">
+      <div class="mcq-option" data-val="US Options"><div class="mcq-key">A</div><div class="mcq-text">US Options</div></div>
+      <div class="mcq-option" data-val="US Equities"><div class="mcq-key">B</div><div class="mcq-text">US Equities</div></div>
+      <div class="mcq-option" data-val="Crypto"><div class="mcq-key">C</div><div class="mcq-text">Crypto</div></div>
+      <div class="mcq-option" data-val="Futures / Forex"><div class="mcq-key">D</div><div class="mcq-text">Futures / Forex</div></div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <span class="q-label">How long have you been trading?</span>
+    <div class="mcq-grid two-col" data-q="experience">
+      <div class="mcq-option" data-val="Under 1 year"><div class="mcq-key">A</div><div class="mcq-text">Under 1 year</div></div>
+      <div class="mcq-option" data-val="1 to 3 years"><div class="mcq-key">B</div><div class="mcq-text">1 to 3 years</div></div>
+      <div class="mcq-option" data-val="3 to 5 years"><div class="mcq-key">C</div><div class="mcq-text">3 to 5 years</div></div>
+      <div class="mcq-option" data-val="5+ years"><div class="mcq-key">D</div><div class="mcq-text">5+ years</div></div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <span class="q-label">Biggest problem right now?</span>
+    <div class="mcq-grid" data-q="problem">
+      <div class="mcq-option" data-val="Chasing entries, always late"><div class="mcq-key">A</div><div class="mcq-text">Chasing entries, always late</div></div>
+      <div class="mcq-option" data-val="No macro framework, trading blind"><div class="mcq-key">B</div><div class="mcq-text">No macro framework, trading blind</div></div>
+      <div class="mcq-option" data-val="Sizing and risk, inconsistent"><div class="mcq-key">C</div><div class="mcq-text">Sizing and risk, inconsistent</div></div>
+      <div class="mcq-option" data-val="Psychology, cutting winners holding losers"><div class="mcq-key">D</div><div class="mcq-text">Psychology, cutting winners holding losers</div></div>
+    </div>
+  </div>
+
+  <div class="q-block">
+    <span class="q-label">Investment budget for coaching</span>
+    <div class="mcq-grid two-col" data-q="budget">
+      <div class="mcq-option" data-val="low" id="budgetA"><div class="mcq-key">A</div><div class="mcq-text">Under $2,000</div></div>
+      <div class="mcq-option" data-val="low2" id="budgetB"><div class="mcq-key">B</div><div class="mcq-text">$2,000 to $5,000</div></div>
+      <div class="mcq-option" data-val="$5,000 to $10,000"><div class="mcq-key">C</div><div class="mcq-text">$5,000 to $10,000</div></div>
+      <div class="mcq-option" data-val="$10,000+"><div class="mcq-key">D</div><div class="mcq-text">$10,000+</div></div>
+    </div>
+  </div>
+
+  <div class="submit-row">
+    <button class="submit-btn" id="submitBtn" onclick="handleSubmit()">Submit</button>
+
+    <div class="bonus-note">
+      <span class="bonus-icon">🎁</span>
+      <span class="bonus-text">
+        Everyone who shows up gets <strong>my full free data stack</strong> — the exact tools I use to pull institutional-grade market data without paying for a Bloomberg Terminal.
+      </span>
+    </div>
+  </div>
+
+  <div class="error-banner" id="errorBanner">
+    <div class="error-icon-x">✕</div>
+    <div>
+      <div class="error-title" id="errorTitle">Something needs fixing.</div>
+      <div class="error-body" id="errorBody">Please check your answers and try again.</div>
+    </div>
+  </div>
+</div>
+
+<div class="cal-section" id="calSection">
+  <div class="cal-header">
+    <div class="cal-left">
+      <div class="cal-dot"></div>
+      <span class="cal-label">Pick a time</span>
+    </div>
+    <span class="cal-note">30 min</span>
+  </div>
+  <div
+    class="calendly-inline-widget"
+    data-url="https://calendly.com/arjun-northstonecrest/30min?hide_gdpr_banner=1&background_color=ffffff&text_color=111111&primary_color=7c6af7"
+    style="min-width:320px;height:700px;"
+  ></div>
+</div>
+
+<footer>
+  <span>© 2026 Northstone Crest LLC</span>
+</footer>
+
+<script>
+  document.querySelectorAll('.mcq-grid').forEach(grid => {
+    grid.querySelectorAll('.mcq-option').forEach(opt => {
+      opt.addEventListener('click', () => {
+        grid.querySelectorAll('.mcq-option').forEach(o => {
+          o.classList.remove('selected', 'error-flash');
+        });
+        opt.classList.add('selected');
+        // clear error if budget was the problem
+        const errorBanner = document.getElementById('errorBanner');
+        if (grid.dataset.q === 'budget') {
+          errorBanner.classList.remove('show');
+        }
+      });
+    });
+  });
+
+  const FORMSPREE_URL = 'https://formspree.io/f/YOUR_FORM_ID';
+
+  function getSelected(q) {
+    const grid = document.querySelector(`.mcq-grid[data-q="${q}"]`);
+    const sel  = grid && grid.querySelector('.mcq-option.selected');
+    return sel ? sel.dataset.val : null;
+  }
+
+  function showError(title, body, flashBudget) {
+    const banner = document.getElementById('errorBanner');
+    document.getElementById('errorTitle').textContent = title;
+    document.getElementById('errorBody').textContent = body;
+    banner.classList.add('show');
+    banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    if (flashBudget) {
+      const budgetGrid = document.querySelector('.mcq-grid[data-q="budget"]');
+      const selected = budgetGrid && budgetGrid.querySelector('.mcq-option.selected');
+      if (selected) {
+        selected.classList.add('error-flash');
+        setTimeout(() => selected.classList.remove('error-flash'), 800);
+      }
+    }
+  }
+
+  async function handleSubmit() {
+    const fname   = document.getElementById('fname').value.trim();
+    const email   = document.getElementById('email').value.trim();
+    const market  = getSelected('market');
+    const exp     = getSelected('experience');
+    const problem = getSelected('problem');
+    const budget  = getSelected('budget');
+
+    const calSection = document.getElementById('calSection');
+    const btn        = document.getElementById('submitBtn');
+
+    if (!fname || !email || !market || !exp || !problem || !budget) {
+      showError('Not quite done.', 'Fill in your name and email, then answer all four questions.', false);
+      return;
+    }
+
+    if (budget === 'low') {
+      showError(
+        'Budget too low.',
+        'Minimum investment to work together is $5,000. Update your answer and resubmit.',
+        true
+      );
+      calSection.classList.remove('show');
+      return;
+    }
+
+    if (budget === 'low2') {
+      showError(
+        'Not the right fit yet.',
+        'The minimum to work together is $5,000. If the $2,000 to $5,000 range is where you are right now, come back when you are ready to commit.',
+        true
+      );
+      calSection.classList.remove('show');
+      return;
+    }
+
+    document.getElementById('errorBanner').classList.remove('show');
+    btn.textContent = 'Sending...';
+    btn.disabled = true;
+
+    try {
+      await fetch(FORMSPREE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          _subject: `New Application — ${fname}`,
+          name: fname, email, market,
+          experience: exp, biggest_problem: problem, budget
+        })
+      });
+    } catch(e) {}
+
+    btn.textContent = 'Sent ✓';
+    btn.style.background = '#16a34a';
+    btn.style.boxShadow = '0 2px 10px rgba(22,163,74,0.2)';
+
+    if (!window.calendlyLoaded) {
+      const s = document.createElement('script');
+      s.src = 'https://assets.calendly.com/assets/external/widget.js';
+      s.async = true;
+      document.body.appendChild(s);
+      window.calendlyLoaded = true;
+    }
+    calSection.classList.add('show');
+    setTimeout(() => calSection.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
+  }
+</script>
+
+</body>
+</html>
